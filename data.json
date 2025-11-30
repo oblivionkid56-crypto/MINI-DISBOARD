@@ -13,6 +13,13 @@
       "passwordHash": "$2b$10$cwE8bcPn49x3K1Kxn9yEAuxeustxIjAjbWzQkltK.VU56C/bQvSBu",
       "theme": "neon",
       "discordTag": "thatguy1_23"
+    },
+    {
+      "id": "u_1764543826901",
+      "username": "Ninjaslayer5879",
+      "passwordHash": "$2b$10$CHGYTZoZ9HodvBmVK576FO6FBnW7OykhOOa48H717GJ8ON4Ws.ok2",
+      "theme": "neon",
+      "discordTag": ""
     }
   ],
   "servers": [
@@ -24,6 +31,28 @@
       "invite": "https://discord.gg/rjgtk2mgbN",
       "description": "Global Gamers Hub, your place to find games, chat with humans, and paly with humans!\r\n\r\nJoin today, and get your free membership!",
       "tags": "Gaming, Chill, Chatting",
+      "imageUrl": "",
+      "pinned": false
+    },
+    {
+      "id": "s_1764541343169",
+      "ownerId": "u_1764537366402",
+      "ownerName": "Kayden",
+      "name": "MercuryRP💜⟶Christmas update🎅",
+      "invite": "https://discord.gg/ZBxYS5su",
+      "description": "Mercury RP — Roblox Street RP ServerThis server’s for people who like street-style RP. We got city vibes, gang stuff, chill moments, and random chaos. Sometimes it’s quiet, sometimes it’s wild. If you’re into making your own story, messing around, or just talking with people who get it, pull up.",
+      "tags": "PARTNERSHIP, RP",
+      "imageUrl": "",
+      "pinned": false
+    },
+    {
+      "id": "s_1764544623061",
+      "ownerId": "u_1764543826901",
+      "ownerName": "Ninjaslayer5879",
+      "name": "Water",
+      "invite": "https://discord.gg/sbVbA46H7G",
+      "description": "Hangout server,Laidback and casual, Have fun and meet new people!",
+      "tags": "Chill, Fun, Hangout, PARTNERSHIP",
       "imageUrl": "",
       "pinned": false
     }
