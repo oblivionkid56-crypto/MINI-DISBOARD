@@ -15,16 +15,5 @@
       "discordTag": ""
     }
   ],
-  "servers": [
-    {
-      "id": "s_1764519386633",
-      "ownerId": "u_1764519343858",
-      "ownerName": "Kayden",
-      "name": "〘🎄〙Global Gamers Hub ",
-      "invite": "https://discord.gg/rjgtk2mgbN",
-      "description": "Global Gamers Hub JOIN NOW to get all the huzz :)",
-      "tags": "gaming, chill , chatting",
-      "imageUrl": ""
-    }
-  ]
+  "servers": []
 }

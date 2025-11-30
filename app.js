@@ -63,6 +63,21 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
   <meta charset="UTF-8" />
   <title>${title}</title>
   <style>
+
+  .verified {
+  font-size: 12px;
+  margin-left: 4px;
+  color: #5ee7ff;
+  font-weight: bold;
+}
+body.theme-light .verified {
+  color: #0ea5e9;
+}
+body.theme-neon .verified {
+  color: #67e8f9;
+  text-shadow: 0 0 6px #67e8f9aa;
+}
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -458,7 +473,11 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
           .charAt(0)
           .toUpperCase()}</div>
         <div class="user-info">
-          <div class="name">@${user.username}</div>
+<div class="name">
+  @${user.username}
+${user.username === "Kayden" ? '<span class="verified">✔</span>' : ""}
+
+</div>
           <div class="discord">${user.discordTag || "Discord not set"}</div>
           <a href="/logout" class="logout">Log out</a>
         </div>
@@ -627,7 +646,7 @@ app.post("/add-server", (req, res) => {
     return res.redirect("/?toast=Missing%20fields");
   }
 
-  db.servers.push({
+db.servers.push({
     id: "s_" + Date.now(),
     ownerId: req.user.id,
     ownerName: req.user.username,
@@ -636,7 +655,9 @@ app.post("/add-server", (req, res) => {
     description,
     tags,
     imageUrl,
-  });
+    pinned: false
+});
+
   saveDb();
   res.redirect("/?toast=Server%20added");
 });
@@ -808,6 +829,25 @@ app.get("/dev/reset", (req, res) => {
   db = { users: [], servers: [] };
   saveDb();
   res.send("Database reset.");
+});
+// PIN / UNPIN SERVER (admin only)
+app.post("/pin-server", (req, res) => {
+if (!req.user || req.user.username !== "Kayden") {
+
+    return res.redirect("/?toast=Not%20authorized");
+  }
+
+  const { id } = req.body;
+
+  const srv = db.servers.find(s => s.id === id);
+  if (!srv) return res.redirect("/?toast=Server%20not%20found");
+
+  srv.pinned = !srv.pinned;
+  saveDb();
+
+  res.redirect(`/?
+    toast=${encodeURIComponent(srv.pinned ? "Pinned" : "Unpinned")}
+  `);
 });
 
 // START SERVER
