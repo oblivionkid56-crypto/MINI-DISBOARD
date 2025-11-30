@@ -883,6 +883,17 @@ if (!req.user || req.user.username !== "Kayden") {
     toast=${encodeURIComponent(srv.pinned ? "Pinned" : "Unpinned")}
   `);
 });
+// EXPORT FULL DATABASE (Owner Only)
+app.get("/export-data", (req, res) => {
+    const SECRET = "KaydenOnly123"; // <-- CHANGE THIS TO ANYTHING YOU WANT
+
+    if (req.query.key !== SECRET) {
+        return res.status(403).send("Forbidden");
+    }
+
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify(db, null, 2));
+});
 
 // START SERVER
 app.listen(PORT, () => {
