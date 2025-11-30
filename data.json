@@ -1,12 +1,6 @@
 {
   "users": [
-    {
-      "id": "u_1764519343858",
-      "username": "Kayden",
-      "passwordHash": "$2b$10$mVt.1JXSuibejNqI56/VeuWpAzxt4I82UXhX4ZvNO6t1ZE07cEjb6",
-      "theme": "neon",
-      "discordTag": "@thatguy1_23"
-    },
+
     {
       "id": "u_1764519423898",
       "username": "BOT1",

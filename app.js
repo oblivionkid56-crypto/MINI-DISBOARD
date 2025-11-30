@@ -1,3 +1,4 @@
+
 // ====== IMPORTS ======
 const express = require("express");
 const session = require("express-session");
@@ -823,6 +824,39 @@ app.get("/logout", (req, res) => {
 });
 
 // DEV RESET ENDPOINT (for you)
+app.get("/dev/reset", (req, res) => {
+  const KEY = "changeme"; // change this if you want
+  if (req.query.key !== KEY) return res.status(403).send("Forbidden");
+  db = { users: [], servers: [] };
+  saveDb();
+  res.send("Database reset.");
+});
+// PIN / UNPIN SERVER (admin only)
+app.post("/pin-server", (req, res) => {
+if (!req.user || req.user.username !== "Kayden") {
+
+    return res.redirect("/?toast=Not%20authorized");
+  }
+
+  const { id } = req.body;
+
+  const srv = db.servers.find(s => s.id === id);
+  if (!srv) return res.redirect("/?toast=Server%20not%20found");
+
+  srv.pinned = !srv.pinned;
+  saveDb();
+
+  res.redirect(`/?
+    toast=${encodeURIComponent(srv.pinned ? "Pinned" : "Unpinned")}
+  `);
+});
+
+// START SERVER
+app.listen(PORT, () => {
+  console.log("MiniDisboard running at http://localhost:" + PORT);
+});
+// DEV RESET ENDPOINT (for you)
+
 app.get("/dev/reset", (req, res) => {
   const KEY = "changeme"; // change this if you want
   if (req.query.key !== KEY) return res.status(403).send("Forbidden");
