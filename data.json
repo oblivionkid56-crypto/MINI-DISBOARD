@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "id": "u_1764519343858",
+      "username": "Kayden",
+      "passwordHash": "$2b$10$mVt.1JXSuibejNqI56/VeuWpAzxt4I82UXhX4ZvNO6t1ZE07cEjb6",
+      "theme": "neon",
+      "discordTag": "@thatguy1_23"
+    },
+    {
+      "id": "u_1764519423898",
+      "username": "BOT1",
+      "passwordHash": "$2b$10$WRgZNGLVYXr408QBTlIJAeWuj2lqlaH72gkV7sTQsxSddaANZDNJ6",
+      "theme": "neon",
+      "discordTag": ""
+    }
+  ],
+  "servers": [
+    {
+      "id": "s_1764519386633",
+      "ownerId": "u_1764519343858",
+      "ownerName": "Kayden",
+      "name": "〘🎄〙Global Gamers Hub ",
+      "invite": "https://discord.gg/rjgtk2mgbN",
+      "description": "Global Gamers Hub JOIN NOW to get all the huzz :)",
+      "tags": "gaming, chill , chatting",
+      "imageUrl": ""
+    }
+  ]
+}

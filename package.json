@@ -1,0 +1,24 @@
+{
+  "name": "chat-gpt-deal",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "desktop": "electron ./electron/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.1",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "passport": "^0.7.0",
+    "passport-discord": "^0.1.4"
+  },
+  "description": "",
+  "devDependencies": {
+    "electron": "^39.2.4"
+  }
+}
