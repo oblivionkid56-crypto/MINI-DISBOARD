@@ -79,19 +79,19 @@ function isAdmin(user) {
   if (!user) return false;
   return (db.adminUsers || []).includes(user.username);
 }
+// ============================================
+//   UNIVERSAL PROFANITY / SLUR FILTER ENGINE
+// ============================================
 
-// ===========================================
-//   🔥 STRONGEST POSSIBLE PROFANITY FILTER 🔥
-// ===========================================
-
-// Normalize text to defeat Unicode bypassing
+// 1) Turn any text into plain ASCII letters & numbers
 function normalizeForFilter(text) {
   return text
     .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/[^\w]/g, "")
+    .normalize("NFKD")                        // remove accents
+    .replace(/[\u0300-\u036f]/g, "")          // diacritics
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")    // zero-width chars
+    .replace(/[^\w]/g, "")                    // remove symbols, punctuation, emojis
+    // Cyrillic lookalike → Latin
     .replace(/[а-яё]/gi, c => {
       const map = {
         'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x',
@@ -99,44 +99,65 @@ function normalizeForFilter(text) {
       };
       return map[c] || c;
     })
+    // Full-width → ASCII
     .replace(/[Ａ-Ｚａ-ｚ]/g, c =>
       String.fromCharCode(c.charCodeAt(0) - 0xFEE0)
     );
 }
 
-// UNBREAKABLE BAD WORD PATTERNS
-const bannedWordPatterns = [
-  /n[i1l!|][gq9]{1,4}[ae@4]?r*/,
-  /f[a4]g+[o0]?t/,
-  /j(e|3)w[s]?/,
-  /p(o|0)rn/,
-  /(p|ｐ)(e|3)(d|ｄ)(o|0)/,
-  /(s|5)(e|3)x/,
-  /c(u|\*)m/,
-  /(d|ｄ)(i|1)ck/,
-  /c(o|0)ck/,
-  /p(u|\*)ssy/,
-  /(a|4)(n|ñ|n)(a|4)l/,
-  /epstein/,
-  /jeffre?yepstein/,
-  /(kys|kil?lyoursel[f]?)/,
-  /suicid(e|3)/,
-  /hitl(e|3)r/,
-  /child(p|0)rn/,
-  /\bcp\b/
-];
+// 2) Organized banned words
+const banned = {
+  slurs: [
+    "nigger", "nigga",
+    "faggot",
+    "kike",
+    "chink",
+    "spic"
+  ],
 
-// Final checker
+  profanity: [
+    "fuck", "shit", "bitch", "bastard", "jerk",
+    "kunt", "frick", "fricken"
+  ],
+
+  sexual: [
+    "porn", "cum", "dick", "cock", "pussy", "anal"
+  ],
+
+  extremist: [
+    "hitler", "gaydolf", "jerdolf", "epstein"
+  ],
+
+  violence: [
+    "kys", "kill yourself", "suicide"
+  ]
+};
+
+// 3) Flatten into one list
+const allBannedWords = Object.values(banned).flat();
+
+// 4) Auto-make regex for bypass protection
+const bannedPatterns = allBannedWords.map(word => {
+  const w = word
+    .toLowerCase()
+    .replace(/a/g, "[a@4]")
+    .replace(/e/g, "[e3]")
+    .replace(/i/g, "[i1!|]")
+    .replace(/o/g, "[o0]")
+    .replace(/u/g, "[u*]")
+    .replace(/s/g, "[s5$]")
+    .replace(/t/g, "[t7+]");
+
+  return new RegExp(w, "i");
+});
+
+// 5) Final detection function
 function containsBannedWords(text) {
   if (!text) return false;
-  const clean = normalizeForFilter(text);
-  return bannedWordPatterns.some(pattern => pattern.test(clean));
+  const normalized = normalizeForFilter(text);
+  return bannedPatterns.some(pattern => pattern.test(normalized));
 }
 
-// NOW place isPartner() DOWN HERE
-function isPartner(serverId) {
-  return (db.partnerServers || []).includes(serverId);
-}
 // ====== MIDDLEWARE ======
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
