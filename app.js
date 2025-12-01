@@ -151,12 +151,49 @@ const bannedPatterns = allBannedWords.map(word => {
   return new RegExp(w, "i");
 });
 
-// 5) Final detection function
+// EXTRA: fragment-based detection (catches broken/extended versions)
+const bannedFragments = [
+  "nig",   // core racist fragment
+  "igg",
+  "gger",
+  "fag",
+  "jew",
+  "kys",
+  "hitl",
+  "porn",
+  "anal",
+  "cum",
+  "cock",
+  "puss",
+  "dick"
+];
+
+// Normalize fragments the same way as text
+const filteredFragments = bannedFragments.map(f =>
+  f
+    .toLowerCase()
+    .replace(/a/g, "[a@4]")
+    .replace(/e/g, "[e3]")
+    .replace(/i/g, "[i1!|]")
+    .replace(/o/g, "[o0]")
+    .replace(/u/g, "[u*]")
+);
+
+// NEW final detection function
 function containsBannedWords(text) {
   if (!text) return false;
+
   const normalized = normalizeForFilter(text);
-  return bannedPatterns.some(pattern => pattern.test(normalized));
+
+  // 1: Try whole-word / strong patterns
+  if (bannedPatterns.some(p => p.test(normalized))) return true;
+
+  // 2: Try fragment matching
+  return filteredFragments.some(f =>
+    new RegExp(f, "i").test(normalized)
+  );
 }
+
 
 function isPartner(serverId) {
   return (db.partnerServers || []).includes(serverId);
