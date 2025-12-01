@@ -80,12 +80,6 @@ function isAdmin(user) {
   return (db.adminUsers || []).includes(user.username);
 }
 
-function isPartner(serverId) {
-  return (db.partnerServers || []).includes(serverId);
-}
-
-
-
 // ===========================================
 //   🔥 STRONGEST POSSIBLE PROFANITY FILTER 🔥
 // ===========================================
@@ -94,32 +88,27 @@ function isPartner(serverId) {
 function normalizeForFilter(text) {
   return text
     .toLowerCase()
-    .normalize("NFKD")                     // removes accent variants
-    .replace(/[\u0300-\u036f]/g, "")       // diacritics
-    .replace(/[\u200B-\u200D\uFEFF]/g, "") // zero-width chars
-    .replace(/[^\w]/g, "")                 // emojis, punctuation, symbols
-    .replace(/[а-яё]/gi, c => {            // Cyrillic homoglyphs
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/[^\w]/g, "")
+    .replace(/[а-яё]/gi, c => {
       const map = {
         'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x',
         'к':'k','м':'m','т':'t','н':'h','в':'b'
       };
       return map[c] || c;
     })
-    .replace(/[Ａ-Ｚａ-ｚ]/g, c =>          // Full-width → ASCII
+    .replace(/[Ａ-Ｚａ-ｚ]/g, c =>
       String.fromCharCode(c.charCodeAt(0) - 0xFEE0)
     );
 }
 
 // UNBREAKABLE BAD WORD PATTERNS
 const bannedWordPatterns = [
-  // N-word (ANY variation)
   /n[i1l!|][gq9]{1,4}[ae@4]?r*/,
-
-  // Slurs
   /f[a4]g+[o0]?t/,
   /j(e|3)w[s]?/,
-
-  // Sexual content
   /p(o|0)rn/,
   /(p|ｐ)(e|3)(d|ｄ)(o|0)/,
   /(s|5)(e|3)x/,
@@ -128,19 +117,11 @@ const bannedWordPatterns = [
   /c(o|0)ck/,
   /p(u|\*)ssy/,
   /(a|4)(n|ñ|n)(a|4)l/,
-
-  // Epstein variations
   /epstein/,
   /jeffre?yepstein/,
-
-  // Violence & self-harm
   /(kys|kil?lyoursel[f]?)/,
   /suicid(e|3)/,
-
-  // Extremist terms
   /hitl(e|3)r/,
-
-  // Child sexual content
   /child(p|0)rn/,
   /\bcp\b/
 ];
@@ -150,6 +131,11 @@ function containsBannedWords(text) {
   if (!text) return false;
   const clean = normalizeForFilter(text);
   return bannedWordPatterns.some(pattern => pattern.test(clean));
+}
+
+// NOW place isPartner() DOWN HERE
+function isPartner(serverId) {
+  return (db.partnerServers || []).includes(serverId);
 }
 // ====== MIDDLEWARE ======
 app.use(bodyParser.urlencoded({ extended: false }));
