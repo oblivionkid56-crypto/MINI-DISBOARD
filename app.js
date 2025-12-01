@@ -1207,6 +1207,54 @@ app.get("/admin/remove-partner", (req, res) => {
   saveDb();
 
   res.redirect("/admin?toast=Removed%20partner");
+
+// REMOVE PARTNER
+app.get("/admin/remove-partner", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const sid = req.query.sid;
+  db.partnerServers = (db.partnerServers || []).filter((x) => x !== sid);
+  saveDb();
+
+  res.redirect("/admin?toast=Removed%20partner");
+});
+
+
+// =============================================
+// 🔥 ADD THIS RIGHT HERE (DELETE USER ROUTE)
+// =============================================
+app.get("/admin/delete-user", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const userId = req.query.id;
+  if (!userId) {
+    return res.redirect("/admin?toast=Missing%20user%20ID");
+  }
+
+  const user = db.users.find((u) => u.id === userId);
+  if (!user) {
+    return res.redirect("/admin?toast=User%20not%20found");
+  }
+
+  // Prevent deleting admins
+  if (db.adminUsers.includes(user.username)) {
+    return res.redirect("/admin?toast=Cannot%20delete%20admin%20accounts");
+  }
+
+  // Delete their servers
+  db.servers = db.servers.filter((s) => s.ownerId !== userId);
+
+  // Delete the user
+  db.users = db.users.filter((u) => u.id !== userId);
+
+  saveDb();
+  return res.redirect("/admin?toast=Deleted%20user:%20" + encodeURIComponent(user.username));
+});
+
 });
 
 // SETTINGS PAGE
