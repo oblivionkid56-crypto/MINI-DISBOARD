@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const fs = require("fs");
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -69,6 +70,7 @@ function saveDb() {
 loadDb();
 
 // ===== HELPER FUNCTIONS =====
+
 function isVerified(username) {
   return (db.verifiedUsers || []).includes(username);
 }
@@ -76,6 +78,20 @@ function isVerified(username) {
 function isAdmin(user) {
   if (!user) return false;
   return (db.adminUsers || []).includes(user.username);
+}
+
+// 🔥 ADDED: BANNED WORD FILTER
+const bannedWords = [
+  "nigger", "nigga", "faggot", "rape", "pedo", "porn", "sex",
+  "hitler", "kill yourself", "kys", "suicide", "slut", "whore",
+  "cum", "dick", "cock", "pussy", "anal", "fuck", "shit",
+  "gay sex", "child porn", "cp"
+];
+
+function containsBannedWords(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return bannedWords.some(word => lower.includes(word));
 }
 
 function isPartner(serverId) {
@@ -760,9 +776,20 @@ app.get("/", (req, res) => {
 // ADD SERVER
 app.post("/add-server", (req, res) => {
   if (!req.user) return res.redirect("/settings?toast=Login%20first");
+
   const { name, invite, description, tags, imageUrl } = req.body;
+
   if (!name || !invite || !description) {
     return res.redirect("/?toast=Missing%20fields");
+  }
+
+  // 🔥 Check for banned content
+  if (
+    containsBannedWords(name) ||
+    containsBannedWords(description) ||
+    containsBannedWords(tags || "")
+  ) {
+    return res.redirect("/?toast=Inappropriate%20content%20blocked");
   }
 
   db.servers.push({
@@ -776,6 +803,7 @@ app.post("/add-server", (req, res) => {
     imageUrl,
     pinned: false,
   });
+
   saveDb();
   res.redirect("/?toast=Server%20added");
 });
@@ -1171,14 +1199,23 @@ app.post("/settings/discord", (req, res) => {
 });
 
 // REGISTER
+// REGISTER
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
+
   if (!username || !password) {
     return res.redirect("/settings?toast=Missing%20fields");
   }
+
+  // 🔥 Block offensive usernames
+  if (containsBannedWords(username)) {
+    return res.redirect("/settings?toast=Choose%20a%20different%20username");
+  }
+
   if (db.users.some((u) => u.username === username)) {
     return res.redirect("/settings?toast=Username%20already%20exists");
   }
+
   const user = {
     id: "u_" + Date.now(),
     username,
@@ -1186,8 +1223,10 @@ app.post("/register", (req, res) => {
     theme: "dark",
     discordTag: "",
   };
+
   db.users.push(user);
   saveDb();
+
   req.session.userId = user.id;
   res.redirect("/settings?toast=Account%20created");
 });
