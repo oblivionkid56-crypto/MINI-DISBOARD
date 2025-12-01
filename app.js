@@ -80,19 +80,44 @@ function isAdmin(user) {
   return (db.adminUsers || []).includes(user.username);
 }
 
-// 🔥 ADDED: BANNED WORD FILTER
-const bannedWords = [
-  "nigger", "nigga", "faggot", "rape", "pedo", "porn", "sex",
-  "hitler", "kill yourself", "kys", "suicide", "slut", "whore",
-  "cum", "dick", "cock", "pussy", "anal", "fuck", "shit",
-  "gay sex", "child porn", "cp"
+// ===== STRONG PROFANITY FILTER =====
+
+// Handles leetspeak, numbers, spacing, mixing words, etc.
+const bannedWordPatterns = [
+  /n[i1!|]g+[e3]?r/i,
+  /f[a4]g+[o0]?t/i,
+  /rap[e3]/i,
+  /ped[o0]/i,
+  /p[o0]rn/i,
+  /s[e3]x/i,
+  /h[i1]tl[e3]r/i,
+  /(kys|kill\s*yoursel[f]?)/i,
+  /suicid[e3]/i,
+  /slut/i,
+  /whor[e3]/i,
+  /c[u*]m/i,
+  /d[i1]ck/i,
+  /c[o0]ck/i,
+  /p[u*]ssy/i,
+  /a[nm]al/i,
+  /f[u*]ck/i,
+  /sh[i1]t/i,
+  /g[a4]y\s*s[e3]x/i,
+  /child\s*p[o0]rn/i,
+  /\bcp\b/i,
+  /j[e3]w[s]?/i
 ];
 
 function containsBannedWords(text) {
   if (!text) return false;
-  const lower = text.toLowerCase();
-  return bannedWords.some(word => lower.includes(word));
+
+  const normalized = text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/gi, ""); // removes spaces & symbols
+
+  return bannedWordPatterns.some(pattern => pattern.test(normalized));
 }
+
 
 function isPartner(serverId) {
   return (db.partnerServers || []).includes(serverId);
