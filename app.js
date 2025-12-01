@@ -1196,30 +1196,6 @@ app.post("/admin/add-partner", (req, res) => {
   return res.redirect("/admin?toast=Already%20a%20partner");
 });
 
-// REMOVE PARTNER
-app.get("/admin/remove-partner", (req, res) => {
-  if (!req.user || !isAdmin(req.user)) {
-    return res.status(403).send("Forbidden");
-  }
-
-  const sid = req.query.sid;
-  db.partnerServers = (db.partnerServers || []).filter((x) => x !== sid);
-  saveDb();
-
-  res.redirect("/admin?toast=Removed%20partner");
-
-// REMOVE PARTNER
-app.get("/admin/remove-partner", (req, res) => {
-  if (!req.user || !isAdmin(req.user)) {
-    return res.status(403).send("Forbidden");
-  }
-
-  const sid = req.query.sid;
-  db.partnerServers = (db.partnerServers || []).filter((x) => x !== sid);
-  saveDb();
-
-  res.redirect("/admin?toast=Removed%20partner");
-});
 
 
 // =============================================
@@ -1255,7 +1231,6 @@ app.get("/admin/delete-user", (req, res) => {
   return res.redirect("/admin?toast=Deleted%20user:%20" + encodeURIComponent(user.username));
 });
 
-});
 
 // SETTINGS PAGE
 app.get("/settings", (req, res) => {
