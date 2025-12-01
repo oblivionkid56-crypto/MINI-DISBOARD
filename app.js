@@ -55,12 +55,10 @@ function loadDb() {
   if (!db.adminUsers) db.adminUsers = [];
   if (!db.partnerServers) db.partnerServers = [];
 
-  // Make sure Kayden and Test are verified + admin
-  if (!db.verifiedUsers.includes("Kayden")) db.verifiedUsers.push("Kayden");
-  if (!db.verifiedUsers.includes("Test")) db.verifiedUsers.push("Test");
-
-  if (!db.adminUsers.includes("Kayden")) db.adminUsers.push("Kayden");
-  if (!db.adminUsers.includes("Test")) db.adminUsers.push("Test");
+// Ensure arrays exist
+db.verifiedUsers = db.verifiedUsers || [];
+db.adminUsers = db.adminUsers || [];
+db.partnerServers = db.partnerServers || [];
 }
 
 function saveDb() {
@@ -989,45 +987,38 @@ app.get("/partnerships", (req, res) => {
 });
 
 // ===== ADMIN PAGE =====
+// ===== ADMIN PAGE =====
 app.get("/admin", (req, res) => {
   if (!req.user || !isAdmin(req.user)) {
     return res.status(403).send("Forbidden");
   }
 
   const verifiedList = (db.verifiedUsers || [])
-    .map(
-      (u) =>
-        `<li>${u} <a href="/admin/unverify?u=${encodeURIComponent(
-          u
-        )}">❌</a></li>`
-    )
+    .map(u => `<li>${u} <a href="/admin/unverify?u=${encodeURIComponent(u)}">❌</a></li>`)
     .join("");
 
   const adminList = (db.adminUsers || [])
-    .map(
-      (u) =>
-        `<li>${u} ${
-          u === "Kayden"
-            ? "<span class='small-text'>(owner)</span>"
-            : `<a href="/admin/remove-admin?u=${encodeURIComponent(
-                u
-              )}">❌</a>`
-        }</li>`
+    .map(u =>
+      `<li>${u} ${
+        u === "Kayden"
+          ? "<span class='small-text'>(owner)</span>"
+          : `<a href="/admin/remove-admin?u=${encodeURIComponent(u)}">❌</a>`
+      }</li>`
     )
     .join("");
 
   const partnerIds = db.partnerServers || [];
-  const partnerServers = db.servers.filter((s) => partnerIds.includes(s.id));
+  const partnerServers = db.servers.filter(s => partnerIds.includes(s.id));
 
   const partnersList = partnerServers
     .map(
-      (s) =>
-        `<li>${s.name} <span class="small-text">(${s.id})</span> <a href="/admin/remove-partner?sid=${encodeURIComponent(
-          s.id
-        )}">❌</a></li>`
+      s =>
+        `<li>${s.name} <span class="small-text">(${s.id})</span>
+        <a href="/admin/remove-partner?sid=${encodeURIComponent(s.id)}">❌</a></li>`
     )
     .join("");
 
+  // BUILD ADMIN PAGE CONTENT
   const content = `
     <div class="page-header">
       <h1>Admin Panel</h1>
@@ -1062,14 +1053,36 @@ app.get("/admin", (req, res) => {
       </ul>
     </div>
 
+    <!-- NEW MANAGE USERS SECTION -->
+    <div class="card">
+      <h2>Manage Users</h2>
+      <p class="small-text">Admins cannot be deleted.</p>
+
+      <ul style="margin-left:20px; line-height:1.6;">
+        ${db.users
+          .map(u => {
+            const protectedUser = db.adminUsers.includes(u.username);
+            return `
+              <li>
+                ${u.username}
+                ${protectedUser ? "<span class='small-text'>(admin)</span>" : ""}
+                ${
+                  !protectedUser
+                    ? `<a href="/admin/delete-user?id=${u.id}" onclick="return confirm('Delete user ${u.username}?')">❌</a>`
+                    : ""
+                }
+              </li>
+            `;
+          })
+          .join("")}
+      </ul>
+    </div>
+
     <div class="card">
       <h2>Partnership servers</h2>
       <form method="POST" action="/admin/add-partner">
-        <label>Server ID (exact)</label>
+        <label>Server ID</label>
         <input name="serverId" required placeholder="e.g. s_1764537526889">
-        <div class="small-text">
-          You can see the ID in data.json or your server list export.
-        </div>
         <button type="submit">Add partner</button>
       </form>
       <ul style="margin-left:20px; line-height:1.6; margin-top:8px;">
@@ -1084,6 +1097,7 @@ app.get("/admin", (req, res) => {
     contentHtml: content,
     toastMessage: req.query.toast || null,
   });
+
   res.send(html);
 });
 
