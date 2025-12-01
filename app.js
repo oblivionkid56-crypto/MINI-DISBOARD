@@ -80,52 +80,77 @@ function isAdmin(user) {
   return (db.adminUsers || []).includes(user.username);
 }
 
-// ===== STRONG PROFANITY FILTER =====
-
-// Handles leetspeak, numbers, spacing, mixing words, etc.
-const bannedWordPatterns = [
-  // ULTIMATE N-WORD BLOCKER
-  /n[\W_]*[i1l!|][\W_]*[gq9]+[\W_]*[gq9]+[\W_]*[ae@4]?[\W_]*r?/i,
-
-  // Other slurs & profanity
-  /f[a4]g+[o0]?t/i,
-  /rap[e3]/i,
-  /ped[o0]/i,
-  /p[o0]rn/i,
-  /s[e3]x/i,
-  /h[i1]tl[e3]r/i,
-  /(kys|kill\s*yoursel[f]?)/i,
-  /suicid[e3]/i,
-  /slut/i,
-  /whor[e3]/i,
-  /c[u*]m/i,
-  /d[i1]ck/i,
-  /c[o0]ck/i,
-  /p[u*]ssy/i,
-  /a[nm]al/i,
-  /f[u*]ck/i,
-  /sh[i1]t/i,
-  /g[a4]y\s*s[e3]x/i,
-  /child\s*p[o0]rn/i,
-  /\bcp\b/i,
-  /j[e3]w[s]?/i
-];
-
-function containsBannedWords(text) {
-  if (!text) return false;
-
-  const normalized = text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/gi, ""); // removes spaces & symbols
-
-  return bannedWordPatterns.some(pattern => pattern.test(normalized));
-}
-
-
 function isPartner(serverId) {
   return (db.partnerServers || []).includes(serverId);
 }
 
+
+
+// ===========================================
+//   🔥 STRONGEST POSSIBLE PROFANITY FILTER 🔥
+// ===========================================
+
+// Normalize text to defeat Unicode bypassing
+function normalizeForFilter(text) {
+  return text
+    .toLowerCase()
+    .normalize("NFKD")                     // removes accent variants
+    .replace(/[\u0300-\u036f]/g, "")       // diacritics
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // zero-width chars
+    .replace(/[^\w]/g, "")                 // emojis, punctuation, symbols
+    .replace(/[а-яё]/gi, c => {            // Cyrillic homoglyphs
+      const map = {
+        'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x',
+        'к':'k','м':'m','т':'t','н':'h','в':'b'
+      };
+      return map[c] || c;
+    })
+    .replace(/[Ａ-Ｚａ-ｚ]/g, c =>          // Full-width → ASCII
+      String.fromCharCode(c.charCodeAt(0) - 0xFEE0)
+    );
+}
+
+// UNBREAKABLE BAD WORD PATTERNS
+const bannedWordPatterns = [
+  // N-word (ANY variation)
+  /n[i1l!|][gq9]{1,4}[ae@4]?r*/,
+
+  // Slurs
+  /f[a4]g+[o0]?t/,
+  /j(e|3)w[s]?/,
+
+  // Sexual content
+  /p(o|0)rn/,
+  /(p|ｐ)(e|3)(d|ｄ)(o|0)/,
+  /(s|5)(e|3)x/,
+  /c(u|\*)m/,
+  /(d|ｄ)(i|1)ck/,
+  /c(o|0)ck/,
+  /p(u|\*)ssy/,
+  /(a|4)(n|ñ|n)(a|4)l/,
+
+  // Epstein variations
+  /epstein/,
+  /jeffre?yepstein/,
+
+  // Violence & self-harm
+  /(kys|kil?lyoursel[f]?)/,
+  /suicid(e|3)/,
+
+  // Extremist terms
+  /hitl(e|3)r/,
+
+  // Child sexual content
+  /child(p|0)rn/,
+  /\bcp\b/
+];
+
+// Final checker
+function containsBannedWords(text) {
+  if (!text) return false;
+  const clean = normalizeForFilter(text);
+  return bannedWordPatterns.some(pattern => pattern.test(clean));
+}
 // ====== MIDDLEWARE ======
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
