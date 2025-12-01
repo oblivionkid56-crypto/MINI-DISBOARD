@@ -1,13 +1,5 @@
 {
-  "verifiedUsers": ["Kayden", "Test"],
   "users": [
-    {
-      "id": "u_1764519423898",
-      "username": "BOT1",
-      "passwordHash": "$2b$10$WRgZNGLVYXr408QBTlIJAeWuj2lqlaH72gkV7sTQsxSddaANZDNJ6",
-      "theme": "neon",
-      "discordTag": ""
-    },
     {
       "id": "u_1764537366402",
       "username": "Kayden",
@@ -19,6 +11,13 @@
       "id": "u_1764543826901",
       "username": "Ninjaslayer5879",
       "passwordHash": "$2b$10$CHGYTZoZ9HodvBmVK576FO6FBnW7OykhOOa48H717GJ8ON4Ws.ok2",
+      "theme": "neon",
+      "discordTag": ""
+    },
+    {
+      "id": "u_1764547639504",
+      "username": "Test",
+      "passwordHash": "$2b$10$sgExv4FZCtxS2j1JK8Pz.O1Wachz8CURA.p7YsyWTXgF/vSnhfG8i",
       "theme": "neon",
       "discordTag": ""
     }
@@ -57,5 +56,13 @@
       "imageUrl": "",
       "pinned": false
     }
+  ],
+  "verifiedUsers": [
+    "Test",
+    "Kayden"
+  ],
+  "adminUsers": [
+    "Kayden",
+    "Test"
   ]
 }
