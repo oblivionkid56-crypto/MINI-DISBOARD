@@ -158,6 +158,10 @@ function containsBannedWords(text) {
   return bannedPatterns.some(pattern => pattern.test(normalized));
 }
 
+function isPartner(serverId) {
+  return (db.partnerServers || []).includes(serverId);
+}
+
 // ====== MIDDLEWARE ======
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
