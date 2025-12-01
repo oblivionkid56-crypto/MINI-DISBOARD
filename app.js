@@ -667,39 +667,41 @@ app.get("/", (req, res) => {
   `;
 
   let serverList;
-  if (servers.length === 0) {
-    serverList = `<p class="small-text">No servers match your search yet.</p>`;
-  } else {
-    serverList =
-      '<div class="server-grid">' +
-      servers
-servers
-  .map((s) => {
-    const mine = user && s.ownerId === user.id;
+ if (servers.length === 0) {
+  serverList = `<p class="small-text">No servers match your search yet.</p>`;
+} else {
+  serverList =
+    '<div class="server-grid">' +
+    servers
+      .map((s) => {
+        const mine = user && s.ownerId === user.id;
 
-    return `
-      <div class="server-card ${s.pinned ? "pinned" : ""}">
-        ${
-          mine
-            ? `<button class="delete-btn" onclick="return confirmDelete('${s.id}')">Delete</button>`
-            : ""
-        }
+        return `
+        <div class="server-card ${s.pinned ? "pinned" : ""}">
+          ${
+            mine
+              ? `<button class="delete-btn" onclick="return confirmDelete('${s.id}')">Delete</button>`
+              : ""
+          }
 
-        <div class="server-name">${s.name}</div>
+          <div class="server-name">${s.name}</div>
 
-        <div class="server-owner">
-          by ${s.ownerName}
-          ${isVerified(s.ownerName) ? '<span class="verified">✔</span>' : ""}
+          <div class="server-owner">
+            by ${s.ownerName}
+            ${isVerified(s.ownerName) ? '<span class="verified">✔</span>' : ""}
+          </div>
+
+          <div class="server-desc">${s.description}</div>
+          ${s.tags ? `<div class="server-tags">Tags: ${s.tags}</div>` : ""}
+          <div class="join-link">
+            <a href="${s.invite}" target="_blank">Join server →</a>
+          </div>
         </div>
-
-        <div class="server-desc">${s.description}</div>
-        ${s.tags ? `<div class="server-tags">Tags: ${s.tags}</div>` : ""}
-        <div class="join-link"><a href="${s.invite}" target="_blank">Join server →</a></div>
-      </div>
-    `;
-  })
-  .join("")
-  }
+      `;
+      })
+      .join("") +
+    "</div>";
+}
 
   const html = renderPage({
     user,
