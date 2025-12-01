@@ -27,6 +27,13 @@
       "passwordHash": "$2b$10$J4hIh7iAcawBVCJ7anDtPefOHZTxKwXVVuulJuvEEVU.TT5W1NzVq",
       "theme": "dark",
       "discordTag": ""
+    },
+    {
+      "id": "u_1764552141494",
+      "username": "evelyn",
+      "passwordHash": "$2b$10$3RLutAdABTHtf.8Zngkki.jVjKJX7AU2Iv4Quy4x1hlDwybtCf3Mq",
+      "theme": "dark",
+      "discordTag": "evelyn.very.cool"
     }
   ],
   "servers": [
@@ -66,10 +73,13 @@
   ],
   "verifiedUsers": [
     "Test",
-    "Kayden"
+    "Kayden",
+    "Skii",
+    "evelyn"
   ],
   "adminUsers": [
     "Kayden",
-    "Test"
+    "Test",
+    "Skii"
   ]
 }
