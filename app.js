@@ -85,6 +85,7 @@ function isAdmin(user) {
 // Handles leetspeak, numbers, spacing, mixing words, etc.
 const bannedWordPatterns = [
   /n[i1!|]g+[e3]?r/i,
+  /negr[o0]/i,          // ← ADD THIS LINE
   /f[a4]g+[o0]?t/i,
   /rap[e3]/i,
   /ped[o0]/i,
