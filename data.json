@@ -20,6 +20,13 @@
       "passwordHash": "$2b$10$sgExv4FZCtxS2j1JK8Pz.O1Wachz8CURA.p7YsyWTXgF/vSnhfG8i",
       "theme": "neon",
       "discordTag": ""
+    },
+    {
+      "id": "u_1764551098453",
+      "username": "Skii",
+      "passwordHash": "$2b$10$J4hIh7iAcawBVCJ7anDtPefOHZTxKwXVVuulJuvEEVU.TT5W1NzVq",
+      "theme": "dark",
+      "discordTag": ""
     }
   ],
   "servers": [
