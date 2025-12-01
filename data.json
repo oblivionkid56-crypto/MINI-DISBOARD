@@ -34,6 +34,20 @@
       "passwordHash": "$2b$10$3RLutAdABTHtf.8Zngkki.jVjKJX7AU2Iv4Quy4x1hlDwybtCf3Mq",
       "theme": "dark",
       "discordTag": "evelyn.very.cool"
+    },
+    {
+      "id": "u_1764589993845",
+      "username": "3omarhassan11@gmail.com",
+      "passwordHash": "$2b$10$zoiMf1Mj9s1lQxQ6zkut/OiSBGE6.z4w2VFtIdqFqygG4VoWMkSS2",
+      "theme": "neon",
+      "discordTag": "omarmohd15920211"
+    },
+    {
+      "id": "u_1764590884878",
+      "username": "Just_Omar15",
+      "passwordHash": "$2b$10$nIluaIgmCWj/MQChYFKsBe9g5JMa7rcCI0jYxosiwuh5Mb5kZHNqq",
+      "theme": "neon",
+      "discordTag": "omarmohd15920211"
     }
   ],
   "servers": [
@@ -69,6 +83,28 @@
       "tags": "Chill, Fun, Hangout, PARTNERSHIP",
       "imageUrl": "",
       "pinned": false
+    },
+    {
+      "id": "s_1764591811007",
+      "ownerId": "u_1764590884878",
+      "ownerName": "Just_Omar15",
+      "name": "OmariscoYT",
+      "invite": "https://discord.gg/j6jG4NG9dd",
+      "description": "This server is about the Youtube channel called Omarisco, you can do a lot of activities here including a custom currency, custom economy, fun channels and bots, weekly giveaways and events and much more!",
+      "tags": "gaming, chill, chatting, partnership, secure, fun, youtube, uploads, exciting, thrilling, organized, ",
+      "imageUrl": "https://drive.google.com/file/d/1hDrYgp8SeoHfjVJNIdi9QJpggbZO6CP1/view?usp=drive_link",
+      "pinned": false
+    },
+    {
+      "id": "s_1764593127549",
+      "ownerId": "u_1764537366402",
+      "ownerName": "Kayden",
+      "name": "Mini-Disboard",
+      "invite": "https://discord.gg/rc7VxDEtpc",
+      "description": "Join OUR MAIN discord server today. THIS IS THE OFFICAL DISCORD SERVER!\r\n\r\nJoin to keep updated on mini-disboards status, and mini disboards updates and bugs!",
+      "tags": "Disboard, Chat, Keep Track On Updates, More!",
+      "imageUrl": "",
+      "pinned": true
     }
   ],
   "verifiedUsers": [
