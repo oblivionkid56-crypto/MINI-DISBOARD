@@ -14,6 +14,7 @@ let db = {
   servers: [],
   verifiedUsers: [],
   adminUsers: [],
+  partnerServers: [], // <-- NEW
 };
 
 function loadDb() {
@@ -30,9 +31,18 @@ function loadDb() {
       db.adminUsers = Array.isArray(parsed.adminUsers)
         ? parsed.adminUsers
         : [];
+      db.partnerServers = Array.isArray(parsed.partnerServers)
+        ? parsed.partnerServers
+        : [];
     } catch (e) {
       console.log("data.json broken, resetting:", e.message);
-      db = { users: [], servers: [], verifiedUsers: [], adminUsers: [] };
+      db = {
+        users: [],
+        servers: [],
+        verifiedUsers: [],
+        adminUsers: [],
+        partnerServers: [],
+      };
       saveDb();
     }
   } else {
@@ -42,6 +52,7 @@ function loadDb() {
   // Ensure arrays exist
   if (!db.verifiedUsers) db.verifiedUsers = [];
   if (!db.adminUsers) db.adminUsers = [];
+  if (!db.partnerServers) db.partnerServers = [];
 
   // Make sure Kayden and Test are verified + admin
   if (!db.verifiedUsers.includes("Kayden")) db.verifiedUsers.push("Kayden");
@@ -67,6 +78,10 @@ function isAdmin(user) {
   return (db.adminUsers || []).includes(user.username);
 }
 
+function isPartner(serverId) {
+  return (db.partnerServers || []).includes(serverId);
+}
+
 // ====== MIDDLEWARE ======
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
@@ -87,7 +102,12 @@ app.use((req, res, next) => {
 });
 
 // ====== UI RENDER FUNCTION ======
-function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage }) {
+function renderPage({
+  user,
+  title = "MiniDisboard",
+  contentHtml,
+  toastMessage,
+}) {
   const theme = user?.theme || "dark";
 
   return `<!DOCTYPE html>
@@ -96,14 +116,13 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
   <meta charset="UTF-8" />
   <title>${title}</title>
   <style>
-
-.card-buttons {
-  position: absolute;
-  top: 6px;
-  right: 8px;
-  display: flex;
-  gap: 6px;
-}
+  .card-buttons {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    display: flex;
+    gap: 6px;
+  }
 
   .verified {
     font-size: 12px;
@@ -117,6 +136,21 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
   body.theme-neon .verified {
     color: #67e8f9;
     text-shadow: 0 0 6px #67e8f9aa;
+  }
+
+  .partner-badge {
+    font-size: 11px;
+    margin-left: 6px;
+    color: #facc15;
+    font-weight: 600;
+  }
+  body.theme-neon .partner-badge {
+    text-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+  }
+
+  .server-card.partner {
+    border-color: #facc15;
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -379,17 +413,6 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
     cursor:pointer;
   }
 
-  .pin-btn {
-    position:absolute;
-    top:6px;
-    left:8px;
-    background:none;
-    border:none;
-    color:#facc15;
-    font-size:11px;
-    cursor:pointer;
-  }
-
   /* TOASTS */
   #toast-container {
     position:fixed;
@@ -514,11 +537,20 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
         <div class="tagline">List and discover Discord servers.</div>
 
         <div class="section-label">Navigation</div>
-        <a href="/" class="nav-link ${title === "Servers" ? "active" : ""}">Servers</a>
-        <a href="/settings" class="nav-link ${title === "Settings" ? "active" : ""}">Settings</a>
+        <a href="/" class="nav-link ${
+          title === "Servers" ? "active" : ""
+        }">Servers</a>
+        <a href="/partnerships" class="nav-link ${
+          title === "Partnerships" ? "active" : ""
+        }">Partnerships</a>
+        <a href="/settings" class="nav-link ${
+          title === "Settings" ? "active" : ""
+        }">Settings</a>
         ${
           user && isAdmin(user)
-            ? `<a href="/admin" class="nav-link ${title === "Admin" ? "active" : ""}">Admin</a>`
+            ? `<a href="/admin" class="nav-link ${
+                title === "Admin" ? "active" : ""
+              }">Admin</a>`
             : ""
         }
 
@@ -562,7 +594,10 @@ function renderPage({ user, title = "MiniDisboard", contentHtml, toastMessage })
     <div class="modal">
       <div class="modal-close" onclick="closeDiscordModal()">×</div>
       <div class="modal-title">Connect Discord</div>
-      <p class="small-text">Enter your Discord username (e.g. name#1234 or @user). This does not log into Discord, it just shows on your profile.</p>
+      <p class="small-text">
+        Enter your Discord username (e.g. name#1234 or @user).
+        This does not log into Discord, it just shows on your profile.
+      </p>
       <form method="POST" action="/settings/discord">
         <label>Your Discord tag</label>
         <input name="discordTag" placeholder="name#1234 or @user" required>
@@ -667,24 +702,34 @@ app.get("/", (req, res) => {
   `;
 
   let serverList;
- if (servers.length === 0) {
-  serverList = `<p class="small-text">No servers match your search yet.</p>`;
-} else {
-  serverList =
-    '<div class="server-grid">' +
-    servers
-      .map((s) => {
-        const mine = user && s.ownerId === user.id;
+  if (servers.length === 0) {
+    serverList = `<p class="small-text">No servers match your search yet.</p>`;
+  } else {
+    serverList =
+      '<div class="server-grid">' +
+      servers
+        .map((s) => {
+          const mine = user && s.ownerId === user.id;
+          const partner = isPartner(s.id);
 
-        return `
-        <div class="server-card ${s.pinned ? "pinned" : ""}">
+          return `
+        <div class="server-card ${s.pinned ? "pinned" : ""} ${
+            partner ? "partner" : ""
+          }">
           ${
             mine
               ? `<button class="delete-btn" onclick="return confirmDelete('${s.id}')">Delete</button>`
               : ""
           }
 
-          <div class="server-name">${s.name}</div>
+          <div class="server-name">
+            ${s.name}
+            ${
+              partner
+                ? '<span class="partner-badge">★ Partner</span>'
+                : ""
+            }
+          </div>
 
           <div class="server-owner">
             by ${s.ownerName}
@@ -698,10 +743,10 @@ app.get("/", (req, res) => {
           </div>
         </div>
       `;
-      })
-      .join("") +
-    "</div>";
-}
+        })
+        .join("") +
+      "</div>";
+  }
 
   const html = renderPage({
     user,
@@ -743,12 +788,75 @@ app.post("/delete-server", (req, res) => {
   db.servers = db.servers.filter(
     (s) => !(s.id === id && s.ownerId === req.user.id)
   );
+  // Also remove from partnerServers if present
+  db.partnerServers = (db.partnerServers || []).filter((sid) => sid !== id);
   saveDb();
   const deleted = db.servers.length !== before;
   res.redirect(
     "/?toast=" +
       encodeURIComponent(deleted ? "Server deleted" : "Unable to delete server")
   );
+});
+
+// ===== PARTNERSHIPS PUBLIC PAGE =====
+app.get("/partnerships", (req, res) => {
+  const user = req.user;
+  const partnerIds = db.partnerServers || [];
+  const partnerServers = db.servers.filter((s) => partnerIds.includes(s.id));
+
+  let content = `
+    <div class="page-header">
+      <h1>Partnerships</h1>
+      <p>Special servers that are officially partnered with MiniDisboard.</p>
+    </div>
+  `;
+
+  if (partnerServers.length === 0) {
+    content += `
+      <div class="card">
+        <p class="small-text">No partner servers yet.</p>
+      </div>
+    `;
+  } else {
+    const listHtml =
+      '<div class="server-grid">' +
+      partnerServers
+        .map((s) => {
+          return `
+        <div class="server-card partner ${s.pinned ? "pinned" : ""}">
+          <div class="server-name">
+            ${s.name}
+            <span class="partner-badge">★ Partner</span>
+          </div>
+          <div class="server-owner">
+            by ${s.ownerName}
+            ${isVerified(s.ownerName) ? '<span class="verified">✔</span>' : ""}
+          </div>
+          <div class="server-desc">${s.description}</div>
+          ${s.tags ? `<div class="server-tags">Tags: ${s.tags}</div>` : ""}
+          <div class="join-link">
+            <a href="${s.invite}" target="_blank">Join server →</a>
+          </div>
+        </div>
+      `;
+        })
+        .join("") +
+      "</div>";
+
+    content += `
+      <div class="card">
+        ${listHtml}
+      </div>
+    `;
+  }
+
+  const html = renderPage({
+    user,
+    title: "Partnerships",
+    contentHtml: content,
+    toastMessage: req.query.toast || null,
+  });
+  res.send(html);
 });
 
 // ===== ADMIN PAGE =====
@@ -776,6 +884,18 @@ app.get("/admin", (req, res) => {
                 u
               )}">❌</a>`
         }</li>`
+    )
+    .join("");
+
+  const partnerIds = db.partnerServers || [];
+  const partnerServers = db.servers.filter((s) => partnerIds.includes(s.id));
+
+  const partnersList = partnerServers
+    .map(
+      (s) =>
+        `<li>${s.name} <span class="small-text">(${s.id})</span> <a href="/admin/remove-partner?sid=${encodeURIComponent(
+          s.id
+        )}">❌</a></li>`
     )
     .join("");
 
@@ -810,6 +930,21 @@ app.get("/admin", (req, res) => {
       </form>
       <ul style="margin-left:20px; line-height:1.6; margin-top:8px;">
         ${adminList || "<i>No admins yet.</i>"}
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Partnership servers</h2>
+      <form method="POST" action="/admin/add-partner">
+        <label>Server ID (exact)</label>
+        <input name="serverId" required placeholder="e.g. s_1764537526889">
+        <div class="small-text">
+          You can see the ID in data.json or your server list export.
+        </div>
+        <button type="submit">Add partner</button>
+      </form>
+      <ul style="margin-left:20px; line-height:1.6; margin-top:8px;">
+        ${partnersList || "<i>No partner servers yet.</i>"}
       </ul>
     </div>
   `;
@@ -888,9 +1023,47 @@ app.get("/admin/remove-admin", (req, res) => {
   db.adminUsers = (db.adminUsers || []).filter((x) => x !== u);
   saveDb();
 
-  res.redirect(
-    "/admin?toast=Removed%20admin:%20" + encodeURIComponent(u)
-  );
+  res.redirect("/admin?toast=Removed%20admin:%20" + encodeURIComponent(u));
+});
+
+// ADD PARTNER (only if server exists)
+app.post("/admin/add-partner", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const sid = (req.body.serverId || "").trim();
+  if (!sid) {
+    return res.redirect("/admin?toast=Missing%20server%20ID");
+  }
+
+  const server = db.servers.find((s) => s.id === sid);
+  if (!server) {
+    return res.redirect("/admin?toast=Server%20not%20found");
+  }
+
+  if (!db.partnerServers.includes(sid)) {
+    db.partnerServers.push(sid);
+    saveDb();
+    return res.redirect(
+      "/admin?toast=Added%20partner:%20" + encodeURIComponent(server.name)
+    );
+  }
+
+  return res.redirect("/admin?toast=Already%20a%20partner");
+});
+
+// REMOVE PARTNER
+app.get("/admin/remove-partner", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const sid = req.query.sid;
+  db.partnerServers = (db.partnerServers || []).filter((x) => x !== sid);
+  saveDb();
+
+  res.redirect("/admin?toast=Removed%20partner");
 });
 
 // SETTINGS PAGE
@@ -1041,7 +1214,13 @@ app.get("/logout", (req, res) => {
 app.get("/dev/reset", (req, res) => {
   const KEY = "changeme"; // change this if you want
   if (req.query.key !== KEY) return res.status(403).send("Forbidden");
-  db = { users: [], servers: [], verifiedUsers: [], adminUsers: [] };
+  db = {
+    users: [],
+    servers: [],
+    verifiedUsers: [],
+    adminUsers: [],
+    partnerServers: [],
+  };
   saveDb();
   res.send("Database reset.");
 });
