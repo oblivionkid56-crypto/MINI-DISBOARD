@@ -15,7 +15,7 @@ let db = {
   servers: [],
   verifiedUsers: [],
   adminUsers: [],
-  partnerServers: [], // <-- NEW
+  partnerServers: [],
 };
 
 function loadDb() {
@@ -55,7 +55,6 @@ function loadDb() {
   if (!db.adminUsers) db.adminUsers = [];
   if (!db.partnerServers) db.partnerServers = [];
 
-// Ensure arrays exist
 db.verifiedUsers = db.verifiedUsers || [];
 db.adminUsers = db.adminUsers || [];
 db.partnerServers = db.partnerServers || [];
@@ -78,17 +77,17 @@ function isAdmin(user) {
   return (db.adminUsers || []).includes(user.username);
 }
 // ============================================
-//   UNIVERSAL PROFANITY / SLUR FILTER ENGINE
+//   UNIVERSAL PROFANITY / SLUR FILTER ENGINE
 // ============================================
 
 // 1) Turn any text into plain ASCII letters & numbers
 function normalizeForFilter(text) {
   return text
     .toLowerCase()
-    .normalize("NFKD")                        // remove accents
-    .replace(/[\u0300-\u036f]/g, "")          // diacritics
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")    // zero-width chars
-    .replace(/[^\w]/g, "")                    // remove symbols, punctuation, emojis
+    .normalize("NFKD")              // remove accents
+    .replace(/[\u0300-\u036f]/g, "")          // diacritics
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")    // zero-width chars
+    .replace(/[^\w]/g, "")                    // remove symbols, punctuation, emojis
     // Cyrillic lookalike → Latin
     .replace(/[а-яё]/gi, c => {
       const map = {
@@ -123,7 +122,7 @@ const banned = {
   ],
 
   extremist: [
-    "hitler", "gaydolf", "jerdolf", "epstein"
+    "hitler", "gaydolf", "jerdolf", "epstein", "racist"
   ],
 
   violence: [
@@ -151,7 +150,7 @@ const bannedPatterns = allBannedWords.map(word => {
 
 // EXTRA: fragment-based detection (catches broken/extended versions)
 const bannedFragments = [
-  "nig",   // core racist fragment
+  "nig",   // core racist fragment
   "igg",
   "gger",
   "fag",
@@ -216,7 +215,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== UI RENDER FUNCTION ======
+// ====== UI RENDER FUNCTION (UPDATED MODERN UI STYLES) ======
 function renderPage({
   user,
   title = "MiniDisboard",
@@ -231,6 +230,8 @@ function renderPage({
   <meta charset="UTF-8" />
   <title>${title}</title>
   <style>
+  /* --- ADVANCED UI/UX STYLES --- */
+
   .card-buttons {
     position: absolute;
     top: 6px;
@@ -244,13 +245,15 @@ function renderPage({
     margin-left: 4px;
     color: #5ee7ff;
     font-weight: bold;
+    text-shadow: 0 0 4px rgba(94, 231, 255, 0.5); /* Subtle glow */
   }
   body.theme-light .verified {
     color: #0ea5e9;
+    text-shadow: none;
   }
   body.theme-neon .verified {
     color: #67e8f9;
-    text-shadow: 0 0 6px #67e8f9aa;
+    text-shadow: 0 0 8px #67e8f9aa;
   }
 
   .partner-badge {
@@ -266,6 +269,11 @@ function renderPage({
   .server-card.partner {
     border-color: #facc15;
     box-shadow: 0 0 12px rgba(250, 204, 21, 0.25);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  .server-card.partner:hover {
+    transform: translateY(-3px); /* Lift effect */
+    box-shadow: 0 8px 20px rgba(250, 204, 21, 0.4);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -284,6 +292,7 @@ function renderPage({
     overflow:hidden;
   }
 
+  /* THEMES */
   body.theme-dark {
     background:#18191c;
     color:#f9fafb;
@@ -293,10 +302,12 @@ function renderPage({
     color:#111827;
   }
   body.theme-neon {
-    background:radial-gradient(circle at top,#2f355e,#050816 60%);
+    /* More vibrant neon background */
+    background: #050816;
+    background-image: radial-gradient(circle at top,#2f355e 10%, #050816 70%);
     color:#e5e7eb;
   }
-
+  
   a { color:inherit; text-decoration:none; }
 
   .app-shell { display:flex; height:100vh; }
@@ -312,7 +323,11 @@ function renderPage({
   }
   .sidebar.theme-dark { background:#1f2125; }
   .sidebar.theme-light { background:#ffffff; border-right-color:#e5e7eb; }
-  .sidebar.theme-neon { background:rgba(10,16,35,0.96); border-right-color:rgba(148,163,184,0.3); }
+  .sidebar.theme-neon { 
+    background:rgba(10,16,35,0.96); 
+    border-right-color:rgba(148,163,184,0.3); 
+    box-shadow: 2px 0 10px rgba(0,0,0,0.4); /* Add depth */
+  }
 
   .logo {
     font-weight:800;
@@ -321,7 +336,11 @@ function renderPage({
     text-transform:uppercase;
     margin-bottom:6px;
   }
-  .logo span { color:#9b5cff; }
+  .logo span { 
+    color:#9b5cff; 
+    text-shadow: 0 0 6px rgba(155, 92, 255, 0.7); /* Logo glow */
+    transition: color 0.3s;
+  }
   .tagline {
     font-size:11px;
     color:var(--muted);
@@ -338,7 +357,7 @@ function renderPage({
 
   .nav-link {
     display:block;
-    padding:8px 10px;
+    padding:10px 12px; /* Slightly larger hit area */
     border-radius:10px;
     font-size:14px;
     margin-bottom:4px;
@@ -346,12 +365,17 @@ function renderPage({
     border:1px solid transparent;
   }
   .nav-link:hover {
-    background:rgba(148,163,184,0.14);
+    background:rgba(148,163,184,0.18); /* Darker hover */
+    transform: translateX(2px); /* Slight movement */
   }
   .nav-link.active {
-    background:rgba(132,88,255,0.16);
-    border-color:rgba(132,88,255,0.6);
+    background:linear-gradient(90deg, rgba(132,88,255,0.18), rgba(132,88,255,0.05));
+    border-color:rgba(132,88,255,0.8);
     color:#e5e7ff;
+    font-weight: 600;
+  }
+  body.theme-neon .nav-link.active {
+    box-shadow: 0 0 8px rgba(132,88,255,0.4);
   }
 
   .user-box {
@@ -359,12 +383,12 @@ function renderPage({
     padding-top:10px;
     border-top:1px solid rgba(55,65,81,0.6);
     display:flex;
-    gap:8px;
+    gap:10px; /* Increased gap */
     align-items:center;
   }
   .user-avatar {
-    width:32px;
-    height:32px;
+    width:36px; /* Slightly larger avatar */
+    height:36px;
     border-radius:999px;
     background:linear-gradient(135deg,#5865f2,#9b5cff);
     display:flex;
@@ -372,48 +396,57 @@ function renderPage({
     justify-content:center;
     color:#fff;
     font-weight:700;
-    font-size:15px;
+    font-size:16px;
+    box-shadow: 0 0 8px rgba(88, 101, 242, 0.5); /* Avatar glow */
   }
-  .user-info { font-size:12px; }
+  .user-info { font-size:13px; }
   .user-info .name { font-weight:600; }
-  .user-info .discord { font-size:11px; color:var(--muted); }
+  .user-info .discord { font-size:12px; color:var(--muted); }
   .user-info .logout {
     font-size:11px;
     color:#f97373;
     margin-top:2px;
     display:inline-block;
+    transition: color 0.1s;
+  }
+  .user-info .logout:hover {
+    color: #ef4444;
   }
 
   .content {
     flex:1;
-    padding:20px 24px;
+    padding:24px 32px; /* Larger padding */
     overflow-y:auto;
   }
 
   .page-header h1 {
-    font-size:20px;
+    font-size:24px; /* Larger heading */
     margin-bottom:4px;
+    font-weight:800;
   }
   .page-header p {
-    font-size:13px;
+    font-size:14px;
     color:var(--muted);
-    margin-bottom:10px;
+    margin-bottom:12px;
   }
 
   .card {
     background:rgba(31,31,37,0.96);
-    border-radius:12px;
-    padding:16px;
-    margin-bottom:16px;
+    border-radius:16px; /* Larger border radius */
+    padding:20px; /* Larger padding */
+    margin-bottom:20px;
     border:1px solid rgba(55,65,81,0.9);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Subtle card shadow */
   }
   body.theme-light .card {
     background:#ffffff;
     border-color:#e5e7eb;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
   }
   body.theme-neon .card {
     background:rgba(15,23,42,0.98);
     border-color:rgba(56,189,248,0.4);
+    box-shadow: 0 0 15px rgba(56,189,248,0.15); /* Neon glow effect */
   }
 
   label {
@@ -421,17 +454,23 @@ function renderPage({
     font-size:12px;
     margin:8px 0 2px;
     color:var(--muted);
+    font-weight: 500;
   }
   input, textarea {
     width:100%;
-    padding:8px 9px;
-    border-radius:9px;
+    padding:10px 12px; /* Larger padding */
+    border-radius:10px;
     border:1px solid #374151;
     background:#111827;
     color:#f9fafb;
-    font-size:13px;
+    font-size:14px;
     outline:none;
     margin-bottom:4px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus, textarea:focus {
+    border-color: var(--accent1);
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.4);
   }
   body.theme-light input,
   body.theme-light textarea {
@@ -439,22 +478,33 @@ function renderPage({
     color:#111827;
     border-color:#d1d5db;
   }
-  textarea { resize:vertical; min-height:60px; }
+  body.theme-neon input,
+  body.theme-neon textarea {
+    border-color: rgba(56,189,248,0.5);
+  }
+  textarea { resize:vertical; min-height:80px; }
 
   button {
     background:linear-gradient(90deg,var(--accent1),var(--accent2));
     border:none;
-    padding:9px 16px;
+    padding:10px 20px; /* Larger button */
     border-radius:999px;
-    font-size:13px;
+    font-size:14px;
     font-weight:600;
     color:#fff;
     cursor:pointer;
-    margin-top:8px;
+    margin-top:10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+  button:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
 
   .small-text {
-    font-size:11px;
+    font-size:12px;
     color:var(--muted);
     margin-top:4px;
   }
@@ -462,40 +512,46 @@ function renderPage({
   .field-row {
     display:flex;
     align-items:center;
-    gap:6px;
-    margin-top:4px;
+    gap:8px;
+    margin-top:6px;
   }
-  .field-row input[type="radio"] {
-    width:auto;
-  }
+  .field-row label { margin: 0; }
 
   .search-row {
     display:flex;
-    gap:8px;
+    gap:10px;
     flex-wrap:wrap;
-    margin-bottom:8px;
+    margin-bottom:10px;
   }
   .search-row input {
     flex:1;
-    min-width:140px;
+    min-width:180px;
   }
   .count-text {
-    font-size:12px;
+    font-size:13px;
     color:var(--muted);
-    margin-bottom:4px;
+    margin-bottom:6px;
   }
 
+  /* SERVER GRID */
   .server-grid {
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:12px;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); /* Wider cards */
+    gap:16px;
   }
   .server-card {
     background:rgba(24,25,32,0.96);
-    border-radius:12px;
-    padding:10px 12px;
+    border-radius:14px;
+    padding:16px; /* Increased card padding */
     border:1px solid rgba(55,65,81,0.9);
     position:relative;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease-out; /* Add transition for hover */
+  }
+  .server-card:hover:not(.partner) {
+    border-color: var(--accent1);
+    box-shadow: 0 4px 10px rgba(88, 101, 242, 0.15);
   }
   .server-card.pinned {
     border-color:#facc15;
@@ -510,45 +566,52 @@ function renderPage({
     border-color:rgba(56,189,248,0.4);
   }
 
-  .server-name { font-size:15px; font-weight:600; }
-  .server-owner { font-size:11px; color:var(--muted); margin-bottom:4px; }
-  .server-desc { font-size:13px; margin-top:3px; }
-  .server-tags { font-size:11px; color:var(--muted); margin-top:4px; }
-  .join-link { margin-top:6px; text-align:right; font-size:12px; }
-  .join-link a { color:#22c55e; }
+  .server-name { font-size:18px; font-weight:700; } /* Larger name */
+  .server-owner { font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .server-desc { font-size:14px; margin-top:6px; flex-grow: 1; } /* Take up space */
+  .server-tags { font-size:12px; color:var(--muted); margin-top:8px; }
+  .join-link { margin-top:12px; text-align:right; font-size:13px; }
+  .join-link a { color:#22c55e; font-weight: 600; transition: color 0.1s; }
+  .join-link a:hover { color: #16a34a; }
 
   .delete-btn {
     position:absolute;
-    top:6px;
-    right:8px;
+    top:10px;
+    right:10px;
     background:none;
     border:none;
     color:#f97373;
-    font-size:11px;
+    font-size:13px;
     cursor:pointer;
+    transition: color 0.1s;
+    padding: 4px;
+    line-height: 1;
+  }
+  .delete-btn:hover {
+    color: #ef4444;
   }
 
-  /* TOASTS */
+  /* TOASTS (Keep functional) */
   #toast-container {
     position:fixed;
-    top:16px;
-    right:18px;
+    top:20px;
+    right:20px;
     z-index:9999;
   }
   .toast {
-    padding:10px 14px;
-    margin-bottom:8px;
+    padding:12px 18px;
+    margin-bottom:10px;
     border-radius:10px;
-    font-size:13px;
+    font-size:14px;
     color:var(--dangerText);
     background:var(--danger);
     box-shadow:0 10px 30px rgba(0,0,0,0.5);
     animation:slideIn .25s ease-out, fadeOut .35s ease-in forwards;
-    animation-delay:0s, 2.2s;
+    animation-delay:0s, 2.7s; /* Longer delay */
   }
   @keyframes slideIn {
     from { transform:translateX(110%); opacity:0; }
-    to   { transform:translateX(0); opacity:1; }
+    to   { transform:translateX(0); opacity:1; }
   }
   @keyframes fadeOut {
     to { transform:translateX(110%); opacity:0; }
@@ -558,18 +621,20 @@ function renderPage({
   .modal-backdrop {
     position:fixed;
     inset:0;
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.75); /* Darker backdrop */
     display:none;
     align-items:center;
     justify-content:center;
     z-index:9998;
+    backdrop-filter: blur(4px); /* Blur effect */
   }
   .modal {
     background:#1f2125;
-    border-radius:14px;
-    padding:16px 18px;
-    width:320px;
+    border-radius:18px; /* Larger border radius */
+    padding:20px;
+    width:360px; /* Wider modal */
     border:1px solid rgba(99,102,241,0.7);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
   body.theme-light .modal {
     background:#ffffff;
@@ -579,14 +644,18 @@ function renderPage({
   body.theme-neon .modal {
     background:rgba(15,23,42,0.98);
     border-color:rgba(99,102,241,0.8);
+    box-shadow: 0 0 20px rgba(99,102,241,0.4);
   }
-  .modal-title { font-size:16px; font-weight:600; margin-bottom:6px; }
+  .modal-title { font-size:20px; font-weight:700; margin-bottom:8px; }
   .modal-close {
     float:right;
-    font-size:16px;
+    font-size:20px;
     cursor:pointer;
     color:var(--muted);
+    transition: color 0.1s;
   }
+  .modal-close:hover { color: #ef4444; }
+
   </style>
 
   <script>
@@ -599,12 +668,13 @@ function renderPage({
       d.className = "toast";
       d.textContent = message;
       c.appendChild(d);
-      setTimeout(() => d.remove(), 2500);
+      setTimeout(() => d.remove(), 3000); // 3 seconds before removal
     }
 
     function validateInvite(form) {
       const invite = form.invite.value.trim();
-      const regex = /^(https?:\\/\\/)?(www\\.)?(discord\\.gg\\/|discord\\.com\\/invite\\/)[A-Za-z0-9]+$/;
+      // Added case-insensitivity to the regex
+      const regex = /^(https?:\\/\\/)?(www\\.)?(discord\\.gg\\/|discord\\.com\\/invite\\/)[A-Za-z0-9]+$/i; 
       if (!regex.test(invite)) {
         showToast("You must enter a valid Discord invite link.");
         return false;
@@ -613,7 +683,7 @@ function renderPage({
     }
 
     function confirmDelete(id) {
-      if (confirm("Delete this server?")) {
+      if (confirm("Are you sure you want to permanently delete this server?")) {
         const f = document.createElement("form");
         f.method = "POST";
         f.action = "/delete-server";
@@ -649,7 +719,7 @@ function renderPage({
     <aside class="sidebar theme-${theme}">
       <div>
         <div class="logo">MINI<span>DISBOARD</span></div>
-        <div class="tagline">List and discover Discord servers.</div>
+        <div class="tagline">List and discover Discord communities.</div>
 
         <div class="section-label">Navigation</div>
         <a href="/" class="nav-link ${
@@ -665,11 +735,11 @@ function renderPage({
           user && isAdmin(user)
             ? `<a href="/admin" class="nav-link ${
                 title === "Admin" ? "active" : ""
-              }">Admin</a>`
+              }">Admin Console</a>`
             : ""
         }
 
-        <div class="section-label" style="margin-top:18px;">Downloads</div>
+        <div class="section-label" style="margin-top:18px;">Resources</div>
         <div class="nav-link">Desktop App (coming soon)</div>
       </div>
 
@@ -691,8 +761,8 @@ function renderPage({
         `
             : `
         <div class="user-info">
-          <div class="name">Not logged in</div>
-          <div class="discord">Use forms on Settings</div>
+          <div class="name">Guest User</div>
+          <div class="discord">Log in via Settings</div>
         </div>
         `
         }
@@ -704,7 +774,6 @@ function renderPage({
     </main>
   </div>
 
-  <!-- Discord connect modal -->
   <div id="discord-modal-backdrop" class="modal-backdrop">
     <div class="modal">
       <div class="modal-close" onclick="closeDiscordModal()">×</div>
@@ -714,9 +783,9 @@ function renderPage({
         This does not log into Discord, it just shows on your profile.
       </p>
       <form method="POST" action="/settings/discord">
-        <label>Your Discord tag</label>
+        <label>Your Discord Tag/Username</label>
         <input name="discordTag" placeholder="name#1234 or @user" required>
-        <button type="submit">Save Discord</button>
+        <button type="submit">Save Discord Tag</button>
       </form>
     </div>
   </div>
@@ -833,7 +902,7 @@ app.get("/", (req, res) => {
           }">
           ${
             mine
-              ? `<button class="delete-btn" onclick="return confirmDelete('${s.id}')">Delete</button>`
+              ? `<button class="delete-btn" onclick="return confirmDelete('${s.id}')">❌</button>`
               : ""
           }
 
@@ -1053,7 +1122,6 @@ app.get("/admin", (req, res) => {
       </ul>
     </div>
 
-    <!-- NEW MANAGE USERS SECTION -->
     <div class="card">
       <h2>Manage Users</h2>
       <p class="small-text">Admins cannot be deleted.</p>
@@ -1198,9 +1266,7 @@ app.post("/admin/add-partner", (req, res) => {
 
 
 
-// =============================================
-// 🔥 ADD THIS RIGHT HERE (DELETE USER ROUTE)
-// =============================================
+// DELETE USER ROUTE (Admin function)
 app.get("/admin/delete-user", (req, res) => {
   if (!req.user || !isAdmin(req.user)) {
     return res.status(403).send("Forbidden");
