@@ -16,6 +16,7 @@ let db = {
   verifiedUsers: [],
   adminUsers: [],
   partnerServers: [],
+  messages: [], // NEW
 };
 
 function loadDb() {
@@ -35,6 +36,8 @@ function loadDb() {
       db.partnerServers = Array.isArray(parsed.partnerServers)
         ? parsed.partnerServers
         : [];
+        db.messages = Array.isArray(parsed.messages) ? parsed.messages 
+        : [];
     } catch (e) {
       console.log("data.json broken, resetting:", e.message);
       db = {
@@ -43,6 +46,7 @@ function loadDb() {
         verifiedUsers: [],
         adminUsers: [],
         partnerServers: [],
+        messages: [], // NEW
       };
       saveDb();
     }
@@ -732,15 +736,32 @@ function renderPage({
           title === "Settings" ? "active" : ""
         }">Settings</a>
         ${
-          user && isAdmin(user)
-            ? `<a href="/admin" class="nav-link ${
-                title === "Admin" ? "active" : ""
-              }">Admin Console</a>`
-            : ""
-        }
+  user
+    ? `<a href="/inbox" class="nav-link ${
+        title === "Inbox" ? "active" : ""
+      }">Inbox</a>`
+    : ""
+}
+${
+  user && isAdmin(user)
+    ? `
+      <a href="/admin" class="nav-link ${
+        title === "Admin" ? "active" : ""
+      }">Admin Console</a>
+      <a href="/admin/inbox" class="nav-link ${
+        title === "Admin Inbox" ? "active" : ""
+      }">Admin Inbox</a>
+    `
+    : ""
+}
 
-        <div class="section-label" style="margin-top:18px;">Resources</div>
-        <div class="nav-link">Desktop App (coming soon)</div>
+<div class="section-label" style="margin-top:18px;">Resources</div>
+<a href="/information" class="nav-link ${
+  title === "Information" ? "active" : ""
+}">Information</a>
+<a href="/request-verification" class="nav-link ${
+  title === "Request Verification" ? "active" : ""
+}">Request Verification</a>
       </div>
 
       <div class="user-box">
@@ -1446,6 +1467,63 @@ app.post("/login", (req, res) => {
   res.redirect("/settings?toast=Logged%20in");
 });
 
+app.post("/request-verification", (req, res) => {
+  if (!req.user) return res.redirect("/settings?toast=Login%20first");
+
+db.messages.push({
+  id: "m_" + Date.now(),
+  from: req.user.username,
+  to: "owner",
+  content: req.body.message,
+  time: new Date().toISOString(),
+  read: false,
+  replies: []
+});
+
+  saveDb();
+  res.redirect("/request-verification?toast=Request%20sent");
+});
+
+
+app.post("/admin/delete-message", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const { id } = req.body;
+  db.messages = (db.messages || []).filter(m => m.id !== id);
+  saveDb();
+
+  res.redirect("/admin/inbox?toast=Message%20deleted");
+});
+
+
+app.post("/admin/reply-message", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const { id, reply } = req.body;
+  if (!reply?.trim()) {
+    return res.redirect("/admin/inbox?toast=Reply%20cannot%20be%20empty");
+  }
+
+  const msg = db.messages.find(m => m.id === id);
+  if (!msg) {
+    return res.redirect("/admin/inbox?toast=Message%20not%20found");
+  }
+
+  msg.replies.push({
+    from: req.user.username,
+    content: reply,
+    time: new Date().toISOString()
+  });
+
+  saveDb();
+  res.redirect("/admin/inbox?toast=Reply%20sent");
+});
+
+
 // LOGOUT
 app.get("/logout", (req, res) => {
   req.session.destroy(() => {
@@ -1479,6 +1557,189 @@ app.get("/export-data", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(JSON.stringify(db, null, 2));
 });
+
+app.get("/information", (req, res) => {
+  res.send(renderPage({
+    user: req.user,
+    title: "Information",
+    contentHtml: `
+      <div class="page-header">
+        <h1>Information</h1>
+        <p>About MiniDisboard.</p>
+      </div>
+      <div class="card">
+        <p class="small-text">
+          MiniDisboard is a community-driven Discord server listing platform.
+          Verified servers and users are reviewed manually by staff.
+        </p>
+      </div>
+    `
+  }));
+});
+
+app.get("/request-verification", (req, res) => {
+  if (!req.user) return res.redirect("/settings?toast=Login%20first");
+
+  res.send(renderPage({
+    user: req.user,
+    title: "Request Verification",
+contentHtml: `
+  <div class="page-header">
+    <h1>Request Verification</h1>
+    <p>
+      This sends a message to the site owner.
+      Only send a message if you need help or are reporting a bug.
+    </p>
+  </div>
+
+  <div class="card">
+    <form method="POST">
+      <label>Message</label>
+      <textarea name="message" required></textarea>
+      <button type="submit">Send Request</button>
+    </form>
+  </div>
+`
+  }));
+});
+
+// ===== USER INBOX =====
+app.get("/inbox", (req, res) => {
+  if (!req.user) {
+    return res.redirect("/settings?toast=Login%20first");
+  }
+
+  const myMessages = (db.messages || [])
+    .filter(m => m.from === req.user.username)
+    .slice()
+    .reverse();
+
+  let content = `
+    <div class="page-header">
+      <h1>Your Inbox</h1>
+      <p>Messages and replies from the site owner.</p>
+    </div>
+  `;
+
+  if (myMessages.length === 0) {
+    content += `
+      <div class="card">
+        <p class="small-text">You have not sent any messages yet.</p>
+      </div>
+    `;
+  } else {
+    content += myMessages.map(m => `
+      <div class="card">
+        <div class="small-text">
+          <strong>Sent:</strong> ${new Date(m.time).toLocaleString()}
+        </div>
+
+        <p style="margin-top:8px;">${m.content}</p>
+
+        ${
+          (m.replies || []).length === 0
+            ? `<p class="small-text" style="margin-top:10px;">No replies yet.</p>`
+            : (m.replies || []).map(r => `
+                <div class="card" style="margin-top:10px;">
+                  <div class="small-text">
+                    <strong>Reply from ${r.from}</strong> • ${new Date(r.time).toLocaleString()}
+                  </div>
+                  <p>${r.content}</p>
+                </div>
+              `).join("")
+        }
+      </div>
+    `).join("");
+  }
+
+  res.send(renderPage({
+    user: req.user,
+    title: "Inbox",
+    contentHtml: content
+  }));
+});
+
+
+// ===== ADMIN INBOX =====
+app.get("/admin/inbox", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  const messages = (db.messages || []).slice().reverse();
+
+  // mark all messages as read
+  db.messages.forEach(m => (m.read = true));
+  saveDb();
+
+  let content = `
+    <div class="page-header">
+      <h1>Admin Inbox</h1>
+      <p>Messages sent to the site owner.</p>
+    </div>
+  `;
+
+  if (messages.length === 0) {
+    content += `
+      <div class="card">
+        <p class="small-text">No messages yet.</p>
+      </div>
+    `;
+  } else {
+    content += messages.map(m => `
+      <div class="card">
+        <div class="small-text">
+          <strong>From:</strong> ${m.from}<br>
+          <strong>Sent:</strong> ${new Date(m.time).toLocaleString()}
+          ${!m.read ? " • <strong>UNREAD</strong>" : ""}
+        </div>
+
+        <p style="margin-top:8px;">${m.content}</p>
+
+        ${(m.replies || []).map(r => `
+          <div class="card" style="margin-top:10px;">
+            <div class="small-text">
+              <strong>Reply from ${r.from}</strong> • ${new Date(r.time).toLocaleString()}
+            </div>
+            <p>${r.content}</p>
+          </div>
+        `).join("")}
+
+        <form method="POST" action="/admin/reply-message" style="margin-top:10px;">
+          <input type="hidden" name="id" value="${m.id}">
+          <label>Reply</label>
+          <textarea name="reply" required></textarea>
+          <button type="submit">Send Reply</button>
+        </form>
+
+        <form method="POST" action="/admin/delete-message"
+              onsubmit="return confirm('Delete this message?')">
+          <input type="hidden" name="id" value="${m.id}">
+          <button type="submit" style="background:var(--danger);margin-top:6px;">
+            Delete
+          </button>
+        </form>
+      </div>
+    `).join("");
+  }
+
+  res.send(renderPage({
+    user: req.user,
+    title: "Admin Inbox",
+    contentHtml: content
+  }));
+});
+
+
+app.get("/admin/inbox", (req, res) => {
+  if (!req.user || !isAdmin(req.user)) {
+    return res.status(403).send("Forbidden");
+  }
+
+  
+});
+
+
 
 // START SERVER
 app.listen(PORT, () => {

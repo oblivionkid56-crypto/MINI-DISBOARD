@@ -45,17 +45,6 @@
   ],
   "servers": [
     {
-      "id": "s_1764537526889",
-      "ownerId": "u_1764537366402",
-      "ownerName": "Kayden",
-      "name": "〘🎄〙Global Gamers Hub ",
-      "invite": "https://discord.gg/rjgtk2mgbN",
-      "description": "Global Gamers Hub, your place to find games, chat with humans, and paly with humans!\r\n\r\nJoin today, and get your free membership!",
-      "tags": "Gaming, Chill, Chatting",
-      "imageUrl": "",
-      "pinned": false
-    },
-    {
       "id": "s_1764541343169",
       "ownerId": "u_1764537366402",
       "ownerName": "Kayden",
@@ -89,15 +78,15 @@
       "pinned": false
     },
     {
-      "id": "s_1764593127549",
+      "id": "s_1765998508351",
       "ownerId": "u_1764537366402",
       "ownerName": "Kayden",
-      "name": "Mini-Disboard",
-      "invite": "https://discord.gg/rc7VxDEtpc",
-      "description": "Join OUR MAIN discord server today. THIS IS THE OFFICAL DISCORD SERVER!\r\n\r\nJoin to keep updated on mini-disboards status, and mini disboards updates and bugs!",
-      "tags": "Disboard, Chat, Keep Track On Updates, More!",
+      "name": "A&C SAB Trading & MM Services",
+      "invite": "https://discord.gg/yKync2DcGH",
+      "description": "Welcome to A&C SAB Trading & MM Services, here we offer amazing MM Services for steal a brainrot! ( Roblox )\r\n\r\nWe also offer premium trading for free!\r\n\r\nJoin now, request our mm, get your item without being scammed!",
+      "tags": "Gaming, Roblox, SAB, Steal a  brainrot",
       "imageUrl": "",
-      "pinned": true
+      "pinned": false
     }
   ],
   "verifiedUsers": [
@@ -113,6 +102,8 @@
   ],
   "partnerServers": [
     "s_1764541343169",
-    "s_1764544623061"
-  ]
+    "s_1764544623061",
+    "s_1765998508351"
+  ],
+  "messages": []
 }
