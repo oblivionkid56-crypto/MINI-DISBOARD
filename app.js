@@ -1731,14 +1731,32 @@ app.get("/admin/inbox", (req, res) => {
 });
 
 
-app.get("/admin/inbox", (req, res) => {
+
+// REMOVE PARTNER SERVER
+app.get("/admin/remove-partner", (req, res) => {
   if (!req.user || !isAdmin(req.user)) {
     return res.status(403).send("Forbidden");
   }
 
-  
-});
+  const sid = req.query.sid;
+  if (!sid) {
+    return res.redirect("/admin?toast=Missing%20server%20ID");
+  }
 
+  const before = db.partnerServers.length;
+  db.partnerServers = (db.partnerServers || []).filter(id => id !== sid);
+
+  saveDb();
+
+  const removed = db.partnerServers.length !== before;
+
+  res.redirect(
+    "/admin?toast=" +
+      encodeURIComponent(
+        removed ? "Partner removed" : "Server was not a partner"
+      )
+  );
+});
 
 
 // START SERVER

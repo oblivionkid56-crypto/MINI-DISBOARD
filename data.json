@@ -76,17 +76,6 @@
       "tags": "gaming, chill, chatting, partnership, secure, fun, youtube, uploads, exciting, thrilling, organized, ",
       "imageUrl": "https://drive.google.com/file/d/1hDrYgp8SeoHfjVJNIdi9QJpggbZO6CP1/view?usp=drive_link",
       "pinned": false
-    },
-    {
-      "id": "s_1765998508351",
-      "ownerId": "u_1764537366402",
-      "ownerName": "Kayden",
-      "name": "A&C SAB Trading & MM Services",
-      "invite": "https://discord.gg/yKync2DcGH",
-      "description": "Welcome to A&C SAB Trading & MM Services, here we offer amazing MM Services for steal a brainrot! ( Roblox )\r\n\r\nWe also offer premium trading for free!\r\n\r\nJoin now, request our mm, get your item without being scammed!",
-      "tags": "Gaming, Roblox, SAB, Steal a  brainrot",
-      "imageUrl": "",
-      "pinned": false
     }
   ],
   "verifiedUsers": [
@@ -102,8 +91,7 @@
   ],
   "partnerServers": [
     "s_1764541343169",
-    "s_1764544623061",
-    "s_1765998508351"
+    "s_1764544623061"
   ],
   "messages": []
 }
