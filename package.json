@@ -19,6 +19,7 @@
   },
   "description": "",
   "devDependencies": {
+    "@ljharb/tsconfig": "^0.3.2",
     "electron": "^39.2.4"
   }
 }

@@ -46,7 +46,7 @@ function loadDb() {
         verifiedUsers: [],
         adminUsers: [],
         partnerServers: [],
-        messages: [], // NEW
+        messages: [], 
       };
       saveDb();
     }
@@ -118,7 +118,7 @@ const banned = {
 
   profanity: [
     "fuck", "shit", "bitch", "bastard", "jerk",
-    "kunt", "frick", "fricken"
+    "kunt", "frick", "fricken", "damn", "crap"
   ],
 
   sexual: [
@@ -761,7 +761,7 @@ ${
 }">Information</a>
 <a href="/request-verification" class="nav-link ${
   title === "Request Verification" ? "active" : ""
-}">Request Verification</a>
+}">Contact Us </a>
       </div>
 
       <div class="user-box">
@@ -1548,7 +1548,7 @@ app.get("/dev/reset", (req, res) => {
 
 // EXPORT FULL DATABASE (Owner Only)
 app.get("/export-data", (req, res) => {
-  const SECRET = "KaydenOnly123"; // your key
+  const SECRET = "Secret111"; // your key
 
   if (req.query.key !== SECRET) {
     return res.status(403).send("Forbidden");
@@ -1565,12 +1565,12 @@ app.get("/information", (req, res) => {
     contentHtml: `
       <div class="page-header">
         <h1>Information</h1>
-        <p>About MiniDisboard.</p>
+        <p>About our website!</p>
       </div>
       <div class="card">
         <p class="small-text">
-          MiniDisboard is a community-driven Discord server listing platform.
-          Verified servers and users are reviewed manually by staff.
+          Welcome to our website, here is a palce to list and find discord servers! We have started small but hope to grow big.
+           Feel free to use our " Message " feature when you login/sign up to message me about any questions!
         </p>
       </div>
     `
@@ -1585,9 +1585,9 @@ app.get("/request-verification", (req, res) => {
     title: "Request Verification",
 contentHtml: `
   <div class="page-header">
-    <h1>Request Verification</h1>
+    <h1>Contact Us!</h1>
     <p>
-      This sends a message to the site owner.
+      This sends a message to the owner.
       Only send a message if you need help or are reporting a bug.
     </p>
   </div>
@@ -1603,7 +1603,7 @@ contentHtml: `
   }));
 });
 
-// ===== USER INBOX =====
+// ===== USER INBOX 
 app.get("/inbox", (req, res) => {
   if (!req.user) {
     return res.redirect("/settings?toast=Login%20first");

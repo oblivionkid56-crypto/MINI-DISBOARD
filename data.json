@@ -41,6 +41,13 @@
       "passwordHash": "$2b$10$nIluaIgmCWj/MQChYFKsBe9g5JMa7rcCI0jYxosiwuh5Mb5kZHNqq",
       "theme": "neon",
       "discordTag": "omarmohd15920211"
+    },
+    {
+      "id": "u_1766097406798",
+      "username": "youngpc",
+      "passwordHash": "$2b$10$Rw6G8B7vkzwbpvOX19IQM.W25riEBxse1efjU1ndsBvO.hpzmuXja",
+      "theme": "neon",
+      "discordTag": "@prod.youngpc"
     }
   ],
   "servers": [
