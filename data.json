@@ -83,13 +83,25 @@
       "tags": "gaming, chill, chatting, partnership, secure, fun, youtube, uploads, exciting, thrilling, organized, ",
       "imageUrl": "https://drive.google.com/file/d/1hDrYgp8SeoHfjVJNIdi9QJpggbZO6CP1/view?usp=drive_link",
       "pinned": false
+    },
+    {
+      "id": "s_1766098736704",
+      "ownerId": "u_1764537366402",
+      "ownerName": "Kayden",
+      "name": "YoungPC's Chamber of Doom",
+      "invite": "https://discord.gg/rK3cYz7ufg",
+      "description": "Yoooo my name is YoungPC and im an upcoming producer tryna build a community of like minded creatives, artists, or really anyone who's chill and looking for a good time and more people to talk to and connect with. If this sounds interesting to you, please feel free to join my discord server. We're just starting out so any advice or anyone willing to moderate would be greatly appreciated🙏🙏 LOVE YALL AND TAKE CARE‼️\r\n\r\nFinal choice?",
+      "tags": "music, chill, artists, growing, connection, promotion, gaming, community, ",
+      "imageUrl": "",
+      "pinned": false
     }
   ],
   "verifiedUsers": [
     "Test",
     "Kayden",
     "Skii",
-    "evelyn"
+    "evelyn",
+    "youngpc"
   ],
   "adminUsers": [
     "Kayden",
@@ -98,7 +110,8 @@
   ],
   "partnerServers": [
     "s_1764541343169",
-    "s_1764544623061"
+    "s_1764544623061",
+    "s_1766098736704"
   ],
   "messages": []
 }
