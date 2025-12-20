@@ -237,14 +237,14 @@ function renderPage({
 <!-- Discord / Social Embed -->
 <meta property="og:title" content="${title} | MiniDisboard">
 <meta property="og:description" content="Discover and list public Discord servers. Find communities, partners, and more.">
-<meta property="og:image" content="/logo.png">
+<meta property="og:image" content="https://mini-disboard.online/logo.png">
 <meta property="og:url" content="https://mini-disboard.online/">
 <meta property="og:type" content="website">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title} | MiniDisboard">
 <meta name="twitter:description" content="Discover and list public Discord servers. Find communities, partners, and more.">
-<meta name="twitter:image" content="/logo.png">
+<meta name="twitter:image" content="https://mini-disboard.online/logo.png">
 
   <meta charset="UTF-8" />
   <title>${title}</title>
