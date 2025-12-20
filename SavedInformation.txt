@@ -1,1 +1,1 @@
-https://mini-disboard.onrender.com/export-data?key=Secret111#
+https://mini-disboard.online/export-data?key=Secret111#
