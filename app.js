@@ -774,9 +774,9 @@ ${
 <a href="/information" class="nav-link ${
   title === "Information" ? "active" : ""
 }">Information</a>
-<a href="/request-verification" class="nav-link ${
-  title === "Request Verification" ? "active" : ""
-}">Contact Us </a>
+<a href="/Contact Us" class="nav-link ${
+  title === "Contact Us" ? "active" : ""
+}">Contact Us</a>
       </div>
 
       <div class="user-box">
