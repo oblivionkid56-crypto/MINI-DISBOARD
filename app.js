@@ -1482,7 +1482,7 @@ app.post("/login", (req, res) => {
   res.redirect("/settings?toast=Logged%20in");
 });
 
-app.post("/request-verification", (req, res) => {
+app.post("/Contact Us", (req, res) => {
   if (!req.user) return res.redirect("/settings?toast=Login%20first");
 
 db.messages.push({
@@ -1496,7 +1496,7 @@ db.messages.push({
 });
 
   saveDb();
-  res.redirect("/request-verification?toast=Request%20sent");
+  res.redirect("/Contact Us?toast=Request%20sent");
 });
 
 
@@ -1592,12 +1592,12 @@ app.get("/information", (req, res) => {
   }));
 });
 
-app.get("/request-verification", (req, res) => {
+app.get("/Contact Us", (req, res) => {
   if (!req.user) return res.redirect("/settings?toast=Login%20first");
 
   res.send(renderPage({
     user: req.user,
-    title: "Request Verification",
+    title: "Contact Us",
 contentHtml: `
   <div class="page-header">
     <h1>Contact Us!</h1>
