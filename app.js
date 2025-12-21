@@ -774,7 +774,7 @@ ${
 <a href="/information" class="nav-link ${
   title === "Information" ? "active" : ""
 }">Information</a>
-<a href="/Contact Us" class="nav-link ${
+<a href="/contact-us" class="nav-link ${
   title === "Contact Us" ? "active" : ""
 }">Contact Us</a>
       </div>
@@ -1482,7 +1482,7 @@ app.post("/login", (req, res) => {
   res.redirect("/settings?toast=Logged%20in");
 });
 
-app.post("/Contact Us", (req, res) => {
+app.post("/contact-us", (req, res) => {
   if (!req.user) return res.redirect("/settings?toast=Login%20first");
 
 db.messages.push({
@@ -1496,7 +1496,7 @@ db.messages.push({
 });
 
   saveDb();
-  res.redirect("/Contact Us?toast=Request%20sent");
+  res.redirect("/contact-us?toast=Request%20sent");
 });
 
 
@@ -1550,14 +1550,16 @@ app.get("/logout", (req, res) => {
 app.get("/dev/reset", (req, res) => {
   const KEY = "changeme"; // change this if you want
   if (req.query.key !== KEY) return res.status(403).send("Forbidden");
-  db = {
-    users: [],
-    servers: [],
-    verifiedUsers: [],
-    adminUsers: [],
-    partnerServers: [],
-  };
+db = {
+  users: [],
+  servers: [],
+  verifiedUsers: [],
+  adminUsers: [],
+  partnerServers: [],
+  messages: [],
+};
   saveDb();
+  db.messages = db.messages || [];
   res.send("Database reset.");
 });
 
@@ -1592,7 +1594,7 @@ app.get("/information", (req, res) => {
   }));
 });
 
-app.get("/Contact Us", (req, res) => {
+app.get("/contact-us", (req, res) => {
   if (!req.user) return res.redirect("/settings?toast=Login%20first");
 
   res.send(renderPage({
@@ -1608,7 +1610,7 @@ contentHtml: `
   </div>
 
   <div class="card">
-    <form method="POST">
+<form method="POST" action="/contact-us">
       <label>Message</label>
       <textarea name="message" required></textarea>
       <button type="submit">Send Request</button>
