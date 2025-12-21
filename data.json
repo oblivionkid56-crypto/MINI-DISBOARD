@@ -94,6 +94,17 @@
       "tags": "music, chill, artists, growing, connection, promotion, gaming, community, ",
       "imageUrl": "",
       "pinned": false
+    },
+    {
+      "id": "s_1766348742322",
+      "ownerId": "u_1764537366402",
+      "ownerName": "Kayden",
+      "name": "Mini Disboard ( Offical )",
+      "invite": "https://discord.gg/DXsR34Jtj3",
+      "description": "Mini Disboards Offical Discord Server!",
+      "tags": "",
+      "imageUrl": "",
+      "pinned": true
     }
   ],
   "verifiedUsers": [
@@ -111,7 +122,8 @@
   "partnerServers": [
     "s_1764541343169",
     "s_1764544623061",
-    "s_1766098736704"
+    "s_1766098736704",
+    "s_1766348742322"
   ],
   "messages": []
 }
