@@ -52,17 +52,6 @@
   ],
   "servers": [
     {
-      "id": "s_1764541343169",
-      "ownerId": "u_1764537366402",
-      "ownerName": "Kayden",
-      "name": "MercuryRP💜⟶Christmas update🎅",
-      "invite": "https://discord.gg/ZBxYS5su",
-      "description": "Mercury RP — Roblox Street RP ServerThis server’s for people who like street-style RP. We got city vibes, gang stuff, chill moments, and random chaos. Sometimes it’s quiet, sometimes it’s wild. If you’re into making your own story, messing around, or just talking with people who get it, pull up.",
-      "tags": "PARTNERSHIP, RP",
-      "imageUrl": "",
-      "pinned": false
-    },
-    {
       "id": "s_1764544623061",
       "ownerId": "u_1764543826901",
       "ownerName": "Ninjaslayer5879",
@@ -105,6 +94,17 @@
       "tags": "",
       "imageUrl": "",
       "pinned": true
+    },
+    {
+      "id": "s_1766436912260",
+      "ownerId": "u_1764590884878",
+      "ownerName": "Just_Omar15",
+      "name": "OmariscoYT",
+      "invite": "https://discord.gg/GszGuRqAzK ",
+      "description": "This server is about the Youtube channel called Omarisco, you can do a lot of activities here including a custom currency, custom economy, fun channels and bots, weekly giveaways and events and much more!",
+      "tags": "gaming, chill, chatting, partnerships, organized, giveaways, events, family-friendly",
+      "imageUrl": "",
+      "pinned": false
     }
   ],
   "verifiedUsers": [
@@ -120,7 +120,6 @@
     "Skii"
   ],
   "partnerServers": [
-    "s_1764541343169",
     "s_1764544623061",
     "s_1766098736704",
     "s_1766348742322"
